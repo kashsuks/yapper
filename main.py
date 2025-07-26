@@ -12,11 +12,11 @@ app = App(token=os.environ["SLACK_BOT_TOKEN"])
 def handle_message_events(body, logger):
     logger.info(body)
 
-@app.event("app_mention")
-def mention(event, say):
-    user = event["user"]
-    threadTs = event.get("thread_ts") or event["ts"]
-    say(f"What the f**k is your problem <@{user}>", thread_ts = threadTs)
+# -------------------- ALL THE EVENT IMPORTS ------------------- #
+from events import mention
+
+# event running
+mention.register(app)
     
 if __name__ == "__main__":
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
