@@ -16,7 +16,7 @@ def handle_message_events(body, logger):
 def mention(event, say):
     user = event["user"]
     threadTs = event.get("thread_ts") or event["ts"]
-    say(f"What the fuck do you want <@{user}>", thread_ts = threadTs)
+    say(f"What the f**k is your problem <@{user}>", thread_ts = threadTs)
     
 if __name__ == "__main__":
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
