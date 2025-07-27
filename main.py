@@ -14,9 +14,13 @@ def handle_message_events(body, logger):
 
 # -------------------- ALL THE EVENT IMPORTS ------------------- #
 from events import mention
+from events import leetcode
+from events import joined
 
 # event running
 mention.register(app)
+leetcode.register(app)
+joined.register(app)
     
 if __name__ == "__main__":
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
