@@ -46,10 +46,12 @@ def startSession(track, client):
         "lastTrack": track.get("name", "")
     }
 
-def postTrackToThread(track, threadTs, client):
+def postTrack(track, threadTs, client):
     name = track.get("name", "Unknown")
     artist = track.get("artist", {}).get("#text", "Unknown")
-    text = f"*{artist}* – {name}"
+    url = track.get("url", "").strip('"')
+    text = f"*{artist}* – <{url}|{name}>"
+    test = f"URL: '{url}'"
     client.chat_postMessage(channel=slackChannel, text=text, thread_ts=threadTs)
 
 def register(app):
@@ -73,12 +75,12 @@ def register(app):
                     if getUnixTimestamp() - session["lastTime"] > 1800:
                         session = None
                     elif trackName != session["lastTrack"]:
-                        postTrackToThread(track, session["threadTs"], client)
+                        postTrack(track, session["threadTs"], client)
                         session["lastTrack"] = trackName
                         session["lastTime"] = getUnixTimestamp()
                 elif nowPlaying:
                     session = startSession(track, client)
-                    postTrackToThread(track, session["threadTs"], client)
+                    postTrack(track, session["threadTs"], client)
             except SlackApiError as e:
                 print(f"Slack error: {e.response['error']}")
             except Exception as e:
