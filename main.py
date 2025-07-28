@@ -17,12 +17,14 @@ from events import mention
 from events import leetcode
 from events import joined
 from events import baking
+from events import spotify
 
 # event running
 mention.register(app)
 leetcode.register(app)
 baking.register(app)
 joined.register(app)
+spotify.register(app)
 
 if __name__ == "__main__":
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
