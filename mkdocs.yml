@@ -1,0 +1,9 @@
+site_name: Yapper Documentation
+docs_dir: src_docs
+site_dir: docs
+nav:
+  - Home: index.md
+  - About: about.md
+  - Contribute: contribute.md
+  - Code of Conduct: code_of_conduct.md
+theme: readthedocs
