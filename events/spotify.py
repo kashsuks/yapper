@@ -1,18 +1,15 @@
-# last fm code to get my last song
-
 import os
 import time
 import requests
 from slack_sdk.errors import SlackApiError
-from datetime import datetime
+from slack_sdk import WebClient
 from dotenv import load_dotenv
 
 load_dotenv()
 
 lastfmUser = os.getenv("LASTFM_USER")
 lastfmApiKey = os.getenv("LASTFM_API_KEY")
-slackChannel = os.getenv("SLACK_CHANNEL_ID")
-
+slackChannels = os.getenv("SLACK_CHANNEL_IDS", "").split(",")
 pollInterval = 15
 session = None
 
@@ -38,21 +35,24 @@ def parseTimestamp(track):
 
 def startSession(track, client):
     text = f"<@{os.getenv('SLACK_USER_ID')}> just started a new listening session (he is peak unemployed)"
-    res = client.chat_postMessage(channel=slackChannel, text=text)
+    threadTsMap = {}
+    for channel in slackChannels:
+        res = client.chat_postMessage(channel=channel.strip(), text=text)
+        threadTsMap[channel.strip()] = res["ts"]
     return {
         "startTime": getUnixTimestamp(),
         "lastTime": getUnixTimestamp(),
-        "threadTs": res["ts"],
+        "threadTsMap": threadTsMap,
         "lastTrack": track.get("name", "")
     }
 
-def postTrack(track, threadTs, client):
+def postTrack(track, threadTsMap, client):
     name = track.get("name", "Unknown")
     artist = track.get("artist", {}).get("#text", "Unknown")
     url = track.get("url", "").strip('"')
     text = f"*{artist}* – <{url}|{name}>"
-    test = f"URL: '{url}'"
-    client.chat_postMessage(channel=slackChannel, text=text, thread_ts=threadTs)
+    for channel, threadTs in threadTsMap.items():
+        client.chat_postMessage(channel=channel, text=text, thread_ts=threadTs)
 
 def register(app):
     client = app.client
@@ -75,12 +75,12 @@ def register(app):
                     if getUnixTimestamp() - session["lastTime"] > 1800:
                         session = None
                     elif trackName != session["lastTrack"]:
-                        postTrack(track, session["threadTs"], client)
+                        postTrack(track, session["threadTsMap"], client)
                         session["lastTrack"] = trackName
                         session["lastTime"] = getUnixTimestamp()
                 elif nowPlaying:
                     session = startSession(track, client)
-                    postTrack(track, session["threadTs"], client)
+                    postTrack(track, session["threadTsMap"], client)
             except SlackApiError as e:
                 print(f"Slack error: {e.response['error']}")
             except Exception as e:
