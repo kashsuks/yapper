@@ -37,7 +37,7 @@ def parseTimestamp(track):
     return getUnixTimestamp()
 
 def startSession(track, client):
-    text = f"<@{os.getenv('SLACK_USER_ID')}> just started a new listening session! 🎶"
+    text = f"<@{os.getenv('SLACK_USER_ID')}> just started a new listening session (he is peak unemployed)"
     res = client.chat_postMessage(channel=slackChannel, text=text)
     return {
         "startTime": getUnixTimestamp(),
@@ -49,7 +49,7 @@ def startSession(track, client):
 def postTrackToThread(track, threadTs, client):
     name = track.get("name", "Unknown")
     artist = track.get("artist", {}).get("#text", "Unknown")
-    text = f"*{artist}* – *{name}*"
+    text = f"*{artist}* – {name}"
     client.chat_postMessage(channel=slackChannel, text=text, thread_ts=threadTs)
 
 def register(app):
