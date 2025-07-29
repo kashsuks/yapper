@@ -1,3 +1,4 @@
 dotenv
 slack_bolt
 requests
+osu.py
