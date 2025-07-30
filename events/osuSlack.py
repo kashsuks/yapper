@@ -11,7 +11,7 @@ id = int(os.getenv("id"))
 secret = os.getenv("secret")
 osuId = os.getenv("OSU_ID")
 slackToken = os.getenv("SLACK_BOT_TOKEN")
-slackChannel = os.getenv("slackChannel_ID")
+slackChannel = os.getenv("SLACK_CHANNEL_ID")
 
 osuClient = Client.from_credentials(id, secret, None)
 slackClient = WebClient(token=slackToken)
