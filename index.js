@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
 import pkg from '@slack/bolt';
-import mention from './events/mention.js';
+import { register as mentionRegister} from './events/mention.js';
 import { register as leetcodeRegister } from './events/leetcode.js';
-import joined from './events/joined.js';
+import { register as joinedRegister } from './events/joined.js';
 import { register as lastfmRegister } from './events/lastfm.js';
+import { join } from 'path';
 
 dotenv.config();
 
@@ -15,9 +16,9 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN
 });
 
-mention.register(app);
+mentionRegister(app);
 leetcodeRegister(app);
-joined.register(app);
+joinedRegister(app);
 lastfmRegister(app);
 
 (async () => {

@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
-export default {
-  register(app) {
+
+export function register(app) {
     app.event('app_mention', async ({ event, say, logger }) => {
       const userId = event.user;
       const fullText = event.text || '';
@@ -39,5 +39,4 @@ export default {
         await say({ text: "You're lucky I'm too lazy to deal with you right now.", thread_ts: threadTs });
       }
     });
-  }
-};
+  };
