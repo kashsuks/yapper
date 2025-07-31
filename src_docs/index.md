@@ -11,8 +11,8 @@
 
 The requirements for the Yapper bot are pretty simple.
 
-- Python 3.8+
-- Pip
+- Node.js
+- npm Package Manager
 - Slack Account, Workspace, and the necessary permissions to create bots
 - Git or Github Desktop
 
@@ -27,7 +27,7 @@ git clone https://github.com/kashsuks/yapper
 Now we need to install all the dependencies in order to have the files for the API's and trackers working
 
 ```bash
-pip3 install -r requirements.txt
+npm install
 ```
 
 It's better to run the install command in a virtual environment, but it is not necessary.
@@ -43,7 +43,7 @@ SLACK_BOT_TOKEN=..
 SLACK_APP_TOKEN=..
 LEETCODE_HANDLE=..
 SLACK_USER_ID=..
-SLACK_CHANNEL_ID=..
+SLACK_CHANNEL_IDS=..
 LASTFM_USER=..
 LASTFM_API_KEY=..
 CLIENT_SECRET=..

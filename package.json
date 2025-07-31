@@ -1,0 +1,31 @@
+{
+  "name": "yapper",
+  "version": "1.0.0",
+  "description": "Slack Bot for my personal channel on Hack Club!",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kashsuks/yapper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kashsuks/yapper/issues"
+  },
+  "homepage": "https://github.com/kashsuks/yapper#readme",
+  "dependencies": {
+    "@slack/bolt": "^4.4.0",
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "node-fetch": "^2.7.0"
+  },
+  "type": "module"
+}
