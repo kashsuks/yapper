@@ -30,7 +30,13 @@ Now we need to install all the dependencies in order to have the files for the A
 npm install
 ```
 
-It's better to run the install command in a virtual environment, but it is not necessary.
+In order to test and check whether or not your installation has issues, run:
+
+```bash
+node index.js
+```
+
+If the node setup works, then there should be no error messages displayed.
 
 ## Environment Variables
 
