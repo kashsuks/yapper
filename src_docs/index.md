@@ -11,7 +11,7 @@
 
 The requirements for the Yapper bot are pretty simple.
 
-- Node.js
+- Latest Node.js version
 - npm Package Manager
 - Slack Account, Workspace, and the necessary permissions to create bots
 - Git or Github Desktop
