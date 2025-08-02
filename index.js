@@ -4,6 +4,7 @@ import { register as mentionRegister} from './events/mention.js';
 import { register as leetcodeRegister } from './events/leetcode.js';
 import { register as joinedRegister } from './events/joined.js';
 import { register as lastfmRegister } from './events/lastfm.js';
+import { register as osuRegister } from './events/osu.js';
 import { join } from 'path';
 
 dotenv.config();
@@ -20,6 +21,7 @@ mentionRegister(app);
 leetcodeRegister(app);
 joinedRegister(app);
 lastfmRegister(app);
+osuRegister(app);
 
 (async () => {
   await app.start();
