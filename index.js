@@ -21,7 +21,7 @@ mentionRegister(app);
 leetcodeRegister(app);
 joinedRegister(app);
 lastfmRegister(app);
-osuRegister(app);
+// osuRegister(app);
 
 (async () => {
   await app.start();
