@@ -18,7 +18,6 @@ slackClient = WebClient(token=slackToken)
 
 
 def formatScore(score):
-    print("started formattting")
     beatmap = score.beatmapset
     url = f"https://osu.ppy.sh/beatmapsets/{beatmap.id}#{score.beatmap.mode.value}/{score.beatmap.id}"
     return (
@@ -62,6 +61,6 @@ def loop():
             time.sleep(60)
 
 
-if __name__ == "__main__":
-    print("im starting")
-    threading.Thread(target=loop, daemon=False).start()
+def register(app):
+    # Launch the osu! loop in its own thread when the Slack app starts
+    threading.Thread(target=loop, daemon=True).start()
