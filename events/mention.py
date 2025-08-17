@@ -1,16 +1,16 @@
 import requests
 import re
+from events.blacklist import isBlacklisted, blockIfBlacklisted
 
 def register(app):
     @app.event("app_mention")
+    @blockIfBlacklisted
     def mention(event, say, logger):
         userId = event["user"]
         fullText = event.get("text", "")
         threadTs = event.get("thread_ts") or event["ts"]
         botUserId = app.client.auth_test()["user_id"]
-
         strippedText = fullText.replace(f"<@{botUserId}>", "").strip()
-        
         if strippedText == "":
             say(f"What the f**k is your problem <@{userId}>", thread_ts=threadTs)
         else:
@@ -18,9 +18,7 @@ def register(app):
                 response = requests.post(
                     "https://ai.hackclub.com/chat/completions",
                     headers={"Content-type": "application/json"},
-                    json={
-                        "messages": [{"role": "user", "content": f"Give me a passive aggressive response for the following text. Only return the final response, not anything between <think> tags: {strippedText}"}]
-                    },
+                    json={"messages": [{"role": "user", "content": f"Give me a bitchy and annoying karen like response. Only return the final response, not anything between <think> tags: {strippedText}"}]},
                     timeout=10
                 )
                 if response.ok:

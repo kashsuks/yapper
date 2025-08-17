@@ -1,19 +1,14 @@
 from slack_sdk import WebClient
+from events.blacklist import blockIfBlacklisted
 
 def register(app):
     @app.command("/yapperleave")
-    def leave_channel(ack, body, client: WebClient, respond):
+    @blockIfBlacklisted
+    def leaveChannel(ack, body, client: WebClient, respond):
         ack()
-
-        channel_id = body["channel_id"]
-
+        channelId = body["channel_id"]
         try:
-            client.chat_postMessage(
-                channel=channel_id,
-                text=f"👋 Leaving <#{channel_id}> now. Bye!"
-            )
-
-            client.conversations_leave(channel=channel_id)
-
+            client.chat_postMessage(channel=channelId, text=f"👋 Leaving <#{channelId}> now. Bye!")
+            client.conversations_leave(channel=channelId)
         except Exception as e:
             respond(f"⚠️ Error: {e}")

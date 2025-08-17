@@ -2,8 +2,8 @@ import requests
 from dotenv import load_dotenv
 import os
 import threading
-import time
 import logging
+from events.blacklist import isBlacklisted, blockIfBlacklisted
 
 load_dotenv()
 
@@ -20,75 +20,48 @@ def fetchLeetCodeRating(handle: str):
     try:
         url = f"https://leetcode-api-pied.vercel.app/user/{handle}/contests"
         response = requests.get(url, timeout=10)
-        response.raise_for_status()  # Raise exception for bad status codes
+        response.raise_for_status()
         data = response.json()
         return extractRating(data)
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error fetching rating for {handle}: {e}")
-        return None
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error(f"Error fetching rating for {handle}: {e}")
         return None
 
 def startAutoRatingCheck(app):
-    print("Starting LeetCode rating checker...")
     handle = os.getenv("LEETCODE_HANDLE")
     slackUser = os.getenv("SLACK_USER_ID")
-    channelId = os.getenv("SLACK_CHANNEL_ID", slackUser)
-    
+    slackChannels = os.getenv("SLACK_CHANNEL_IDS", "").split(",")
     if not handle or not slackUser:
-        logger.error("Missing required environment variables: LEETCODE_HANDLE and SLACK_USER_ID")
+        logger.error("Missing required env variables")
         return
-    
     CHECK_INTERVAL = 86400
-    
+
     def check():
         try:
-            print("checking")
             newRating = fetchLeetCodeRating(handle)
-            print(f"Current rating: {newRating}")
-            
             if newRating is not None:
-                # init if its first time
                 if handle not in lastKnownRating:
                     lastKnownRating[handle] = newRating
-                    print(f"Initial rating set for {handle}: {newRating}")
                     logger.info(f"Initial rating for {handle}: {newRating}")
                 else:
                     prevRating = lastKnownRating[handle]
-                    print(f"Previous: {prevRating}, Current: {newRating}")
-                    
-                    if True:
-                        print("im here")
+                    if newRating != prevRating:
                         delta = newRating - prevRating
                         lastKnownRating[handle] = newRating
-                        
                         emoji = "📈" if delta >= 0 else "📉"
                         sign = "+" if delta >= 0 else ""
-                        
-                        try:
-                            print("Sending Slack message...")
-                            response = app.client.chat_postMessage(
-                                channel=channelId,
-                                text=f"<@{slackUser}> {emoji} LeetCode rating update: `{prevRating}` → `{newRating}` ({sign}{delta})"
+                        for channel in slackChannels:
+                            if isBlacklisted(channel):
+                                continue
+                            app.client.chat_postMessage(
+                                channel=channel,
+                                text=f"<@{slackUser}> {emoji} LeetCode rating update: {prevRating} → {newRating} ({sign}{delta})"
                             )
-                            print(f"Slack message sent successfully! Response: {response}")
-                            logger.info(f"Rating update sent: {prevRating} → {newRating}")
-                        except Exception as e:
-                            print(f"Slack error: {e}")
-                            logger.error(f"Error sending Slack message: {e}")
-                    else:
-                        print("No rating change detected")
-            else:
-                print("Failed to fetch rating")
-                logger.warning(f"Could not fetch rating for {handle}")
-                
+            threading.Timer(CHECK_INTERVAL, check).start()
         except Exception as e:
-            print(f"Check function error: {e}")
             logger.error(f"Error in check function: {e}")
-        
-        threading.Timer(CHECK_INTERVAL, check).start()
-    
+            threading.Timer(CHECK_INTERVAL, check).start()
+
     check()
 
 def register(app):

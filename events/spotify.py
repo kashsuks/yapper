@@ -3,12 +3,13 @@ import time
 import requests
 from slack_sdk.errors import SlackApiError
 from dotenv import load_dotenv
+from events.blacklist import isBlacklisted
 
 load_dotenv()
 
 lastfmUser = os.getenv("LASTFM_USER")
 lastfmApiKey = os.getenv("LASTFM_API_KEY")
-slackChannel = os.getenv("SLACK_CHANNEL_IDS")  # Single channel ID
+slackChannels = os.getenv("SLACK_CHANNEL_IDS", "").split(",")
 pollInterval = 15
 session = None
 
@@ -32,9 +33,9 @@ def parseTimestamp(track):
         return int(track["date"]["uts"])
     return getUnixTimestamp()
 
-def startSession(track, client):
+def startSession(track, client, channel):
     text = f"<@{os.getenv('SLACK_USER_ID')}> just started a new listening session (he is peak unemployed)"
-    res = client.chat_postMessage(channel=slackChannel, text=text)
+    res = client.chat_postMessage(channel=channel, text=text)
     return {
         "startTime": getUnixTimestamp(),
         "lastTime": getUnixTimestamp(),
@@ -42,12 +43,12 @@ def startSession(track, client):
         "lastTrack": track.get("name", "")
     }
 
-def postTrack(track, threadTs, client):
+def postTrack(track, threadTs, client, channel):
     name = track.get("name", "Unknown")
     artist = track.get("artist", {}).get("#text", "Unknown")
     url = track.get("url", "").strip('"')
     text = f"*{artist}* – <{url}|{name}>"
-    client.chat_postMessage(channel=slackChannel, text=text, thread_ts=threadTs)
+    client.chat_postMessage(channel=channel, text=text, thread_ts=threadTs)
 
 def register(app):
     client = app.client
@@ -66,20 +67,26 @@ def register(app):
                 trackName = track.get("name")
                 ts = parseTimestamp(track)
 
-                if session:
-                    if getUnixTimestamp() - session["lastTime"] > 1800:
-                        session = None
-                    elif trackName != session["lastTrack"]:
-                        postTrack(track, session["threadTs"], client)
-                        session["lastTrack"] = trackName
-                        session["lastTime"] = getUnixTimestamp()
-                elif nowPlaying:
-                    session = startSession(track, client)
-                    postTrack(track, session["threadTs"], client)
+                for channel in slackChannels:
+                    if isBlacklisted(channel):
+                        continue
+
+                    if session:
+                        if getUnixTimestamp() - session["lastTime"] > 1800:
+                            session = None
+                        elif trackName != session["lastTrack"]:
+                            postTrack(track, session["threadTs"], client, channel)
+                            session["lastTrack"] = trackName
+                            session["lastTime"] = getUnixTimestamp()
+                    elif nowPlaying:
+                        session = startSession(track, client, channel)
+                        postTrack(track, session["threadTs"], client, channel)
+
             except SlackApiError as e:
                 print(f"Slack error: {e.response['error']}")
             except Exception as e:
                 print(f"Error: {e}")
+
             time.sleep(pollInterval)
 
     from threading import Thread
