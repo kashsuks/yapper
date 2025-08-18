@@ -50,6 +50,14 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#join">Join</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#leave">Leave</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -95,6 +103,7 @@
 <li><a href="#installation">Installation</a></li>
 <li><a href="#environment-variables">Environment Variables</a></li>
 <li><a href="#first-time-setup">First Time Setup</a></li>
+<li><a href="#commands">Commads</a></li>
 </ul>
 <h2 id="requirements">Requirements</h2>
 <p>The requirements for the Yapper bot are pretty simple.</p>
@@ -120,7 +129,7 @@
 <p>Heres a snapshot of them.</p>
 <pre><code class="language-bash">SLACK_BOT_TOKEN=..
 SLACK_APP_TOKEN=..
-LEETCODE_HANDLE=..
+LEETCODE_HANDLE=.
 SLACK_USER_ID=..
 SLACK_CHANNEL_IDS=..
 LASTFM_USER=..
@@ -128,8 +137,23 @@ LASTFM_API_KEY=..
 CLIENT_SECRET=..
 CLIENT_ID=..
 OSU_ID=..
+OSU_V1_API=..
+BLACKLISTED_CHANNEL_IDS=..
+ROAST_CHANNEL_ID=..
 </code></pre>
 <p>If you fill out these environment variables from the websites in the readme, your bot will work.</p>
+<h2 id="commands">Commands</h2>
+<p>Yapper is a Bot meaning it doesn't have its own commands, rather we assume that each action the bot carries out is a command.</p>
+<h3 id="join">Join</h3>
+<p>When a user joins the channel that Yapper is currently in it sends a message pinging the user, below is the message:</p>
+<pre><code>Hi @&lt;user&gt;, welcome to the land where @&lt;owner&gt; writes shit code
+</code></pre>
+<p>You can change this message by going to <code>events/joined.py</code> and changing the string to your liking.</p>
+<h3 id="leave">Leave</h3>
+<p>If you want the bot to leave the channel, its quite simple, by using <code>/yapperLeave</code> (and making sure its setup in your Slack API), the bot will leave the channel the command was used in. Here is the message it displays:</p>
+<pre><code>Leaving #&lt;channel name&gt; now. Bye!
+</code></pre>
+<p>If you want to modify this message, head over to your <code>events/leave.py</code> file and changing the leave string as you want.</p>
               
             </div>
           </div><footer>
@@ -178,5 +202,5 @@ OSU_ID=..
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-08-02 02:43:32.997310+00:00
+Build Date UTC : 2025-08-18 18:19:27.305948+00:00
 -->
