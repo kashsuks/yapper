@@ -86,43 +86,36 @@ def generateRoast(username, track, thread_ts=None):
         return fallback
 
 def register(app: App):
-    
     @app.event("message")
     def roastMessage(body, say, logger):
         event = body.get("event", {})
-        
-        try:
-            event = body.get("event", {})
-            channel = event.get("channel")
-            user = event.get("user")
-            text = event.get("text", "").strip()
-            subtype = event.get("subtype")
-            message_ts = event.get("ts")
-            thread_ts = event.get("thread_ts") or message_ts
-            
-            if subtype == "bot_message" or not user:
-                return
-                
-            if not text:
-                say("Please provide your Last.fm username to get roasted!", thread_ts=thread_ts)
-                return
-            
-            tracks = getRecentTracks(text, 10)
-            
-            if not tracks:
-                error_msg = f"couldn't find what **{text}** has been listening to. Make sure that's your correct Last.fm username!"
-                say(error_msg, thread_ts=thread_ts)
-                return
-            
-            track = pickTrack(tracks)
-            if track:
-                roast = generateRoast(user, track, thread_ts)
-                say(roast, thread_ts=thread_ts)
-            else:
-                say("Something went wrong picking a track to roast", thread_ts=thread_ts)
-                
-        except Exception as e:
-            try:
-                say("Something went wrong while trying to roast your music taste 💀", thread_ts=thread_ts)
-            except:
-                pass
+        channel = event.get("channel")
+        user = event.get("user")
+        text = event.get("text", "").strip()
+        subtype = event.get("subtype")
+        message_ts = event.get("ts")
+        thread_ts = event.get("thread_ts") or message_ts
+
+        # 🚨 only allow in roastChannel
+        if channel != roastChannel:
+            return
+
+        if subtype == "bot_message" or not user:
+            return
+
+        if not text:
+            say("Please provide your Last.fm username to get roasted!", thread_ts=thread_ts)
+            return
+
+        tracks = getRecentTracks(text, 10)
+        if not tracks:
+            error_msg = f"couldn't find what **{text}** has been listening to. Make sure that's your correct Last.fm username!"
+            say(error_msg, thread_ts=thread_ts)
+            return
+
+        track = pickTrack(tracks)
+        if track:
+            roast = generateRoast(user, track, thread_ts)
+            say(roast, thread_ts=thread_ts)
+        else:
+            say("Something went wrong picking a track to roast", thread_ts=thread_ts)
