@@ -176,7 +176,7 @@ Leaving #<channel name> now. Bye!
 ---
 
 ### Roast
-- Posts roast messages in the channel defined by `ROAST_CHANNEL_ID`.
+- Posts roast messages in the channel defined by `ROAST_CHANNEL_ID`. Currently it is [a dedicated roast channel](https://hackclub.slack.com/archives/C09AM3PDZ0B) in which you can post your Last.fm username for it to roast you.
 
 ---
 
@@ -194,6 +194,10 @@ You can check the messages leaderboard for the past month by running `/yapperlea
 *Change in* `events/leaderboard.py`.
 
 ---
+
+### Pinging and AI Responses
+
+By pinging `@Yapper` by itself, the bot responds with `What the f**k is your problem @<user>`, but if you put any text beside the ping. For example `@Yapper hi`, the bot will generate and display a response using [the Hack Club AI](ai.hackclub.com)
 
 ## Configuration Examples
 
