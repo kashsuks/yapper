@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from flask import Flask, Response, jsonify, render_template_string, request
 
-from .logging_stream import LogEvent, global_broker
+from .logging_stream import LogEvent, globalBroker
 
 
 def create_app() -> Flask:
@@ -137,15 +137,14 @@ def create_app() -> Flask:
     @app.route("/events")
     def events():
         def gen():
-            for sse in global_broker.subscribe():
+            for sse in globalBroker.subscribe():
                 yield sse
         return Response(gen(), mimetype="text/event-stream")
 
     @app.route("/status")
     def status():
-        # Return current category statuses
         snap: Dict[str, Any] = {}
-        for k, v in global_broker.categories.items():
+        for k, v in globalBroker.categories.items():
             snap[k] = {
                 "status": v.status,
                 "last_message": v.last_message,
@@ -161,18 +160,17 @@ class SseLoggingHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         try:
             msg = self.format(record)
-            # derive category from message prefix like "[mention] ..."
             category = "misc"
             raw = record.getMessage()
             if raw.startswith("[") and "]" in raw:
                 category = raw.split("]", 1)[0].lstrip("[")
             evt = LogEvent(category=category, level=record.levelname.lower(), message=raw)
-            global_broker.publish(evt)
+            globalBroker.publish(evt)
         except Exception:
             pass
 
 
-def run_admin_server_in_thread(host: str = "127.0.0.1", port: int = 8765):
+def run_admin_server_in_thread(host: str = "127.0.0.1", port: int = 6942):
     app = create_app()
 
     def _run():
@@ -181,5 +179,3 @@ def run_admin_server_in_thread(host: str = "127.0.0.1", port: int = 8765):
     t = threading.Thread(target=_run, daemon=True)
     t.start()
     return t
-
-
