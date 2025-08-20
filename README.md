@@ -161,17 +161,17 @@ Leaving #<channel name> now. Bye!
 
 *Tip:* To post **privately only to you**, replace `chat.postMessage` with `chat.postEphemeral` in the code.
 
+**Only happens when the user (me) is listening to music**
+
 ---
 
 ### osu! — Stats/Plays
 - Uses `OSU_ID` + `OSU_V1_API` or `CLIENT_ID`/`CLIENT_SECRET`.
 - Posts plays and PP changes in allowed channels.
 
----
+**Only happens when the user, me is playing osu**
 
-### LeetCode — Stats
-- Uses `LEETCODE_HANDLE`.
-- Posts summary stats on request (e.g., via `@yapper leetcode`).
+---
 
 ---
 
