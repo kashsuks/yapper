@@ -50,13 +50,45 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#join">Join</a>
+    <li class="toctree-l2"><a class="reference internal" href="#first-time-setup">First Time Setup</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#leave">Leave</a>
+    <li class="toctree-l2"><a class="reference internal" href="#file-overview">File Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#commands-behaviors">Commands &amp; Behaviors</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#join-welcome">Join (Welcome)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#leave-slash-command">Leave (Slash Command)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#lastfm-now-playing-tracker">Last.fm — Now Playing Tracker</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#osu-statsplays">osu! — Stats/Plays</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#leetcode-stats">LeetCode — Stats</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#roast">Roast</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#channel-blacklist">Channel Blacklist</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#leaderboard">Leaderboard</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configuration-examples">Configuration Examples</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#env-example">.env Example</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-deployment">Running &amp; Deployment</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#local">Local</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#systemd-server">Systemd (Server)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
     </li>
     </ul>
                 </li>
@@ -96,64 +128,235 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="welcome-to-the-yapper-slack-bot-documentation">Welcome to the Yapper Slack Bot Documentation</h1>
+                <h1 id="yapper-slack-bot-documentation">Yapper Slack Bot Documentation</h1>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#environment-variables">Environment Variables</a></li>
 <li><a href="#first-time-setup">First Time Setup</a></li>
-<li><a href="#commands">Commads</a></li>
+<li><a href="#file-overview">File Overview</a></li>
+<li><a href="#commands-behaviors">Commands &amp; Behaviors</a></li>
+<li><a href="#configuration-examples">Configuration Examples</a></li>
+<li><a href="#running-deployment">Running &amp; Deployment</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
 </ul>
+<hr />
 <h2 id="requirements">Requirements</h2>
-<p>The requirements for the Yapper bot are pretty simple.</p>
+<p>The requirements for the Yapper bot are pretty simple:</p>
 <ul>
-<li>Latest Node.js version</li>
-<li>npm Package Manager</li>
-<li>Slack Account, Workspace, and the necessary permissions to create bots</li>
-<li>Git or Github Desktop</li>
+<li>Latest <strong>Python 3</strong> version</li>
+<li><code>pip</code> Package Manager</li>
+<li>Slack Account, Workspace, and permissions to create bots</li>
+<li>Git or GitHub Desktop</li>
 </ul>
+<hr />
 <h2 id="installation">Installation</h2>
-<p>In order to install the Yapper Slack bot, you must git clone it through the following command:</p>
+<p>Clone the repository:</p>
 <pre><code class="language-bash">git clone https://github.com/kashsuks/yapper
+cd yapper
 </code></pre>
-<p>Now we need to install all the dependencies in order to have the files for the API's and trackers working</p>
-<pre><code class="language-bash">npm install
+<p>Install dependencies:</p>
+<pre><code class="language-bash">pip install -r requirements.txt
 </code></pre>
-<p>In order to test and check whether or not your installation has issues, run:</p>
-<pre><code class="language-bash">node index.js
+<p>Run Yapper locally:</p>
+<pre><code class="language-bash">python main.py
 </code></pre>
-<p>If the node setup works, then there should be no error messages displayed.</p>
+<p>If the setup works, there should be no error messages displayed.</p>
+<hr />
 <h2 id="environment-variables">Environment Variables</h2>
-<p>Since the bot depends on a lot of API's and secrets to do all the tracking features for music, osu! gameplay, etc, there are quite a few environment variables to consider.</p>
-<p>Heres a snapshot of them.</p>
-<pre><code class="language-bash">SLACK_BOT_TOKEN=..
-SLACK_APP_TOKEN=..
-LEETCODE_HANDLE=.
-SLACK_USER_ID=..
-SLACK_CHANNEL_IDS=..
-LASTFM_USER=..
-LASTFM_API_KEY=..
-CLIENT_SECRET=..
-CLIENT_ID=..
-OSU_ID=..
-OSU_V1_API=..
-BLACKLISTED_CHANNEL_IDS=..
-ROAST_CHANNEL_ID=..
+<p>Since the bot depends on multiple APIs, there are quite a few environment variables to configure.<br />
+Create a <code>.env</code> file in your project root:</p>
+<pre><code class="language-dotenv"># Slack
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+SLACK_APP_TOKEN=xapp-your-app-level-token
+SLACK_USER_ID=U0123ABCD
+SLACK_CHANNEL_IDS=C0123ABCD,C0456EFGH
+BLACKLISTED_CHANNEL_IDS=C0NOPOST1,C0NOPOST2
+
+# Last.fm
+LASTFM_USER=your_lastfm_username
+LASTFM_API_KEY=your_lastfm_api_key
+
+# LeetCode
+LEETCODE_HANDLE=your_leetcode_username
+
+# osu!
+OSU_ID=123456
+OSU_V1_API=your_osu_v1_api_key
+CLIENT_ID=your_osu_oauth_client_id
+CLIENT_SECRET=your_osu_oauth_client_secret
+
+# Fun
+ROAST_CHANNEL_ID=C0ROASTME
 </code></pre>
-<p>If you fill out these environment variables from the websites in the readme, your bot will work.</p>
-<h2 id="commands">Commands</h2>
-<p>Yapper is a Bot meaning it doesn't have its own commands, rather we assume that each action the bot carries out is a command.</p>
-<h3 id="join">Join</h3>
-<p>When a user joins the channel that Yapper is currently in it sends a message pinging the user, below is the message:</p>
+<hr />
+<h2 id="first-time-setup">First Time Setup</h2>
+<ol>
+<li><strong>Create a Slack App</strong></li>
+<li>Go to your Slack developer portal and create a new app (from scratch).</li>
+<li>
+<p>Enable <strong>Socket Mode</strong> and generate an <strong>App-Level Token</strong> with the scope <code>connections:write</code>.</p>
+</li>
+<li>
+<p><strong>Bot Token Scopes</strong>
+   Add the following <strong>Bot Token Scopes</strong> under <em>OAuth &amp; Permissions</em>:</p>
+</li>
+<li><code>chat:write</code></li>
+<li><code>app_mentions:read</code></li>
+<li><code>channels:read</code>, <code>groups:read</code>, <code>im:read</code>, <code>mpim:read</code></li>
+<li><code>channels:history</code>, <code>groups:history</code>, <code>im:history</code>, <code>mpim:history</code></li>
+<li><code>channels:join</code></li>
+<li>
+<p><code>commands</code></p>
+</li>
+<li>
+<p><strong>Event Subscriptions</strong></p>
+</li>
+<li>
+<p>Subscribe to:</p>
+<ul>
+<li><code>member_joined_channel</code></li>
+<li><code>app_mention</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Slash Commands</strong></p>
+</li>
+<li>
+<p>Create <code>/yapperLeave</code> in the Slack App settings.</p>
+</li>
+<li>
+<p><strong>Run the Bot</strong>
+   <code>bash
+   python main.py</code></p>
+</li>
+</ol>
+<hr />
+<h2 id="file-overview">File Overview</h2>
+<ul>
+<li><strong><code>main.py</code></strong> – Entrypoint, configures Slack Bolt App and SocketModeHandler.</li>
+<li><strong><code>events/</code></strong></li>
+<li><code>joined.py</code> – Handles welcome messages.</li>
+<li><code>leave.py</code> – Handles leave command.</li>
+<li><code>blacklist.py</code> – Defines blacklisted channel logic.</li>
+<li>other integrations: Last.fm, osu!, LeetCode.</li>
+<li><strong><code>admin/</code></strong></li>
+<li><code>logs.py</code> – Logging utilities (<code>addLog</code>).</li>
+<li><strong><code>requirements.txt</code></strong> – Python dependencies.</li>
+<li><strong><code>docs/</code></strong> – Documentation sources for GitHub Pages (MkDocs/Jekyll).</li>
+</ul>
+<hr />
+<h2 id="commands-behaviors">Commands &amp; Behaviors</h2>
+<h3 id="join-welcome">Join (Welcome)</h3>
+<p>When a user joins a channel:</p>
 <pre><code>Hi @&lt;user&gt;, welcome to the land where @&lt;owner&gt; writes shit code
 </code></pre>
-<p>You can change this message by going to <code>events/joined.py</code> and changing the string to your liking.</p>
-<h3 id="leave">Leave</h3>
-<p>If you want the bot to leave the channel, its quite simple, by using <code>/yapperLeave</code> (and making sure its setup in your Slack API), the bot will leave the channel the command was used in. Here is the message it displays:</p>
+<p><em>Change in</em> <code>events/joined.py</code>.</p>
+<hr />
+<h3 id="leave-slash-command">Leave (Slash Command)</h3>
+<p>Use <code>/yapperLeave</code> to make Yapper leave:</p>
 <pre><code>Leaving #&lt;channel name&gt; now. Bye!
 </code></pre>
-<p>If you want to modify this message, head over to your <code>events/leave.py</code> file and changing the leave string as you want.</p>
+<p><em>Change in</em> <code>events/leave.py</code>.</p>
+<hr />
+<h3 id="lastfm-now-playing-tracker">Last.fm — Now Playing Tracker</h3>
+<ul>
+<li>Polls your Last.fm recent track.</li>
+<li>Posts updates every 15s when the track changes.</li>
+<li>Posts only in <code>SLACK_CHANNEL_IDS</code>, skips <code>BLACKLISTED_CHANNEL_IDS</code>.</li>
+</ul>
+<p><em>Tip:</em> To post <strong>privately only to you</strong>, replace <code>chat.postMessage</code> with <code>chat.postEphemeral</code> in the code.</p>
+<hr />
+<h3 id="osu-statsplays">osu! — Stats/Plays</h3>
+<ul>
+<li>Uses <code>OSU_ID</code> + <code>OSU_V1_API</code> or <code>CLIENT_ID</code>/<code>CLIENT_SECRET</code>.</li>
+<li>Posts plays and PP changes in allowed channels.</li>
+</ul>
+<hr />
+<h3 id="leetcode-stats">LeetCode — Stats</h3>
+<ul>
+<li>Uses <code>LEETCODE_HANDLE</code>.</li>
+<li>Posts summary stats on request (e.g., via <code>@yapper leetcode</code>).</li>
+</ul>
+<hr />
+<h3 id="roast">Roast</h3>
+<ul>
+<li>Posts roast messages in the channel defined by <code>ROAST_CHANNEL_ID</code>.</li>
+</ul>
+<hr />
+<h3 id="channel-blacklist">Channel Blacklist</h3>
+<ul>
+<li>Yapper never posts in channels listed in <code>BLACKLISTED_CHANNEL_IDS</code>.</li>
+</ul>
+<hr />
+<hr />
+<h3 id="leaderboard">Leaderboard</h3>
+<p>You can check the messages leaderboard for the past month by running <code>/yapperleaderboard</code></p>
+<p><em>Change in</em> <code>events/leaderboard.py</code>.</p>
+<hr />
+<h2 id="configuration-examples">Configuration Examples</h2>
+<h3 id="env-example"><code>.env</code> Example</h3>
+<pre><code class="language-dotenv">SLACK_BOT_TOKEN=xoxb-your-token
+SLACK_APP_TOKEN=xapp-your-token
+SLACK_USER_ID=U1234567
+SLACK_CHANNEL_IDS=C0123ABCD,C0456EFGH
+BLACKLISTED_CHANNEL_IDS=C0NOPOST1,C0NOPOST2
+LASTFM_USER=myuser
+LASTFM_API_KEY=myapikey
+LEETCODE_HANDLE=myhandle
+OSU_ID=123456
+OSU_V1_API=osuapikey
+CLIENT_ID=osuoauthid
+CLIENT_SECRET=osuoauthsecret
+ROAST_CHANNEL_ID=C0ROAST
+</code></pre>
+<hr />
+<h2 id="running-deployment">Running &amp; Deployment</h2>
+<h3 id="local">Local</h3>
+<pre><code class="language-bash">pip install -r requirements.txt
+python main.py
+</code></pre>
+<h3 id="systemd-server">Systemd (Server)</h3>
+<p><code>~/.config/systemd/user/yapper.service</code>:</p>
+<pre><code class="language-ini">[Unit]
+Description=Yapper Slack Bot
+After=network.target
+
+[Service]
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=%h/yapper
+ExecStart=/usr/bin/python3 %h/yapper/main.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+</code></pre>
+<p>Enable + start:</p>
+<pre><code class="language-bash">systemctl --user daemon-reload
+systemctl --user enable --now yapper
+</code></pre>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>Bot doesn’t post</strong></li>
+<li>Check <code>SLACK_BOT_TOKEN</code> and <code>SLACK_APP_TOKEN</code>.</li>
+<li>Ensure bot is invited to the channel.</li>
+<li>
+<p>Make sure channel is not blacklisted.</p>
+</li>
+<li>
+<p><strong>Private posts only</strong></p>
+</li>
+<li>
+<p>Use <code>chat.postEphemeral</code> instead of <code>chat.postMessage</code>.</p>
+</li>
+<li>
+<p><strong>Welcome/Leave not firing</strong></p>
+</li>
+<li>Verify event subscriptions + <code>/yapperLeave</code> slash command is set up.</li>
+</ul>
               
             </div>
           </div><footer>
@@ -202,5 +405,5 @@ ROAST_CHANNEL_ID=..
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-08-18 18:19:27.305948+00:00
+Build Date UTC : 2025-08-20 22:18:54.650825+00:00
 -->

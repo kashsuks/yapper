@@ -1,88 +1,262 @@
-# Welcome to the Yapper Slack Bot Documentation
+---
+layout: default
+title: Yapper Slack Bot
+nav_order: 1
+---
+
+# Yapper Slack Bot Documentation
 
 ## Table of Contents
-
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
 - [First Time Setup](#first-time-setup)
-- [Commads](#commands)
+- [File Overview](#file-overview)
+- [Commands & Behaviors](#commands-behaviors)
+- [Configuration Examples](#configuration-examples)
+- [Running & Deployment](#running-deployment)
+- [Troubleshooting](#troubleshooting)
+
+---
 
 ## Requirements
 
-The requirements for the Yapper bot are pretty simple.
+The requirements for the Yapper bot are pretty simple:
 
-- Latest Node.js version
-- npm Package Manager
-- Slack Account, Workspace, and the necessary permissions to create bots
-- Git or Github Desktop
+- Latest **Python 3** version
+- `pip` Package Manager
+- Slack Account, Workspace, and permissions to create bots
+- Git or GitHub Desktop
+
+---
 
 ## Installation
 
-In order to install the Yapper Slack bot, you must git clone it through the following command:
+Clone the repository:
 
 ```bash
 git clone https://github.com/kashsuks/yapper
+cd yapper
 ```
 
-Now we need to install all the dependencies in order to have the files for the API's and trackers working
+Install dependencies:
 
 ```bash
-npm install
+pip install -r requirements.txt
 ```
 
-In order to test and check whether or not your installation has issues, run:
+Run Yapper locally:
 
 ```bash
-node index.js
+python main.py
 ```
 
-If the node setup works, then there should be no error messages displayed.
+If the setup works, there should be no error messages displayed.
+
+---
 
 ## Environment Variables
 
-Since the bot depends on a lot of API's and secrets to do all the tracking features for music, osu! gameplay, etc, there are quite a few environment variables to consider.
+Since the bot depends on multiple APIs, there are quite a few environment variables to configure.  
+Create a `.env` file in your project root:
 
-Heres a snapshot of them.
+```dotenv
+# Slack
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+SLACK_APP_TOKEN=xapp-your-app-level-token
+SLACK_USER_ID=U0123ABCD
+SLACK_CHANNEL_IDS=C0123ABCD,C0456EFGH
+BLACKLISTED_CHANNEL_IDS=C0NOPOST1,C0NOPOST2
 
-```bash
-SLACK_BOT_TOKEN=..
-SLACK_APP_TOKEN=..
-LEETCODE_HANDLE=.
-SLACK_USER_ID=..
-SLACK_CHANNEL_IDS=..
-LASTFM_USER=..
-LASTFM_API_KEY=..
-CLIENT_SECRET=..
-CLIENT_ID=..
-OSU_ID=..
-OSU_V1_API=..
-BLACKLISTED_CHANNEL_IDS=..
-ROAST_CHANNEL_ID=..
+# Last.fm
+LASTFM_USER=your_lastfm_username
+LASTFM_API_KEY=your_lastfm_api_key
+
+# LeetCode
+LEETCODE_HANDLE=your_leetcode_username
+
+# osu!
+OSU_ID=123456
+OSU_V1_API=your_osu_v1_api_key
+CLIENT_ID=your_osu_oauth_client_id
+CLIENT_SECRET=your_osu_oauth_client_secret
+
+# Fun
+ROAST_CHANNEL_ID=C0ROASTME
 ```
 
-If you fill out these environment variables from the websites in the readme, your bot will work.
+---
 
-## Commands
+## First Time Setup
 
-Yapper is a Bot meaning it doesn't have its own commands, rather we assume that each action the bot carries out is a command.
+1. **Create a Slack App**
+   - Go to your Slack developer portal and create a new app (from scratch).
+   - Enable **Socket Mode** and generate an **App-Level Token** with the scope `connections:write`.
 
-### Join
+2. **Bot Token Scopes**
+   Add the following **Bot Token Scopes** under *OAuth & Permissions*:
+   - `chat:write`
+   - `app_mentions:read`
+   - `channels:read`, `groups:read`, `im:read`, `mpim:read`
+   - `channels:history`, `groups:history`, `im:history`, `mpim:history`
+   - `channels:join`
+   - `commands`
 
-When a user joins the channel that Yapper is currently in it sends a message pinging the user, below is the message:
+3. **Event Subscriptions**
+   - Subscribe to:
+     - `member_joined_channel`
+     - `app_mention`
 
+4. **Slash Commands**
+   - Create `/yapperLeave` in the Slack App settings.
+
+5. **Run the Bot**
+   ```bash
+   python main.py
+   ```
+
+---
+
+## File Overview
+
+- **`main.py`** – Entrypoint, configures Slack Bolt App and SocketModeHandler.
+- **`events/`**
+  - `joined.py` – Handles welcome messages.
+  - `leave.py` – Handles leave command.
+  - `blacklist.py` – Defines blacklisted channel logic.
+  - other integrations: Last.fm, osu!, LeetCode.
+- **`admin/`**
+  - `logs.py` – Logging utilities (`addLog`).
+- **`requirements.txt`** – Python dependencies.
+- **`docs/`** – Documentation sources for GitHub Pages (MkDocs/Jekyll).
+
+---
+
+## Commands & Behaviors
+
+### Join (Welcome)
+When a user joins a channel:
 ```
 Hi @<user>, welcome to the land where @<owner> writes shit code
 ```
+*Change in* `events/joined.py`.
 
-You can change this message by going to `events/joined.py` and changing the string to your liking.
+---
 
-### Leave
-
-If you want the bot to leave the channel, its quite simple, by using `/yapperLeave` (and making sure its setup in your Slack API), the bot will leave the channel the command was used in. Here is the message it displays:
-
+### Leave (Slash Command)
+Use `/yapperLeave` to make Yapper leave:
 ```
 Leaving #<channel name> now. Bye!
 ```
+*Change in* `events/leave.py`.
 
-If you want to modify this message, head over to your `events/leave.py` file and changing the leave string as you want.
+---
+
+### Last.fm — Now Playing Tracker
+- Polls your Last.fm recent track.
+- Posts updates every 15s when the track changes.
+- Posts only in `SLACK_CHANNEL_IDS`, skips `BLACKLISTED_CHANNEL_IDS`.
+
+*Tip:* To post **privately only to you**, replace `chat.postMessage` with `chat.postEphemeral` in the code.
+
+---
+
+### osu! — Stats/Plays
+- Uses `OSU_ID` + `OSU_V1_API` or `CLIENT_ID`/`CLIENT_SECRET`.
+- Posts plays and PP changes in allowed channels.
+
+---
+
+### LeetCode — Stats
+- Uses `LEETCODE_HANDLE`.
+- Posts summary stats on request (e.g., via `@yapper leetcode`).
+
+---
+
+### Roast
+- Posts roast messages in the channel defined by `ROAST_CHANNEL_ID`.
+
+---
+
+### Channel Blacklist
+- Yapper never posts in channels listed in `BLACKLISTED_CHANNEL_IDS`.
+
+---
+
+---
+
+### Leaderboard
+
+You can check the messages leaderboard for the past month by running `/yapperleaderboard`
+
+*Change in* `events/leaderboard.py`.
+
+---
+
+## Configuration Examples
+
+### `.env` Example
+```dotenv
+SLACK_BOT_TOKEN=xoxb-your-token
+SLACK_APP_TOKEN=xapp-your-token
+SLACK_USER_ID=U1234567
+SLACK_CHANNEL_IDS=C0123ABCD,C0456EFGH
+BLACKLISTED_CHANNEL_IDS=C0NOPOST1,C0NOPOST2
+LASTFM_USER=myuser
+LASTFM_API_KEY=myapikey
+LEETCODE_HANDLE=myhandle
+OSU_ID=123456
+OSU_V1_API=osuapikey
+CLIENT_ID=osuoauthid
+CLIENT_SECRET=osuoauthsecret
+ROAST_CHANNEL_ID=C0ROAST
+```
+
+---
+
+## Running & Deployment
+
+### Local
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+### Systemd (Server)
+`~/.config/systemd/user/yapper.service`:
+```ini
+[Unit]
+Description=Yapper Slack Bot
+After=network.target
+
+[Service]
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=%h/yapper
+ExecStart=/usr/bin/python3 %h/yapper/main.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+```
+
+Enable + start:
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now yapper
+```
+
+---
+
+## Troubleshooting
+
+- **Bot doesn’t post**
+  - Check `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN`.
+  - Ensure bot is invited to the channel.
+  - Make sure channel is not blacklisted.
+
+- **Private posts only**
+  - Use `chat.postEphemeral` instead of `chat.postMessage`.
+
+- **Welcome/Leave not firing**
+  - Verify event subscriptions + `/yapperLeave` slash command is set up.
