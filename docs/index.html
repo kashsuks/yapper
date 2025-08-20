@@ -64,13 +64,13 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#osu-statsplays">osu! — Stats/Plays</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#leetcode-stats">LeetCode — Stats</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#roast">Roast</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#channel-blacklist">Channel Blacklist</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#leaderboard">Leaderboard</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pinging-and-ai-responses">Pinging and AI Responses</a>
     </li>
         </ul>
     </li>
@@ -129,6 +129,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="yapper-slack-bot-documentation">Yapper Slack Bot Documentation</h1>
+<p>Refer to <a href="https://kashsuks.github.io/yapper">the website</a> for better documentation</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#requirements">Requirements</a></li>
@@ -267,22 +268,19 @@ ROAST_CHANNEL_ID=C0ROASTME
 <li>Posts only in <code>SLACK_CHANNEL_IDS</code>, skips <code>BLACKLISTED_CHANNEL_IDS</code>.</li>
 </ul>
 <p><em>Tip:</em> To post <strong>privately only to you</strong>, replace <code>chat.postMessage</code> with <code>chat.postEphemeral</code> in the code.</p>
+<p><strong>Only happens when the user (me) is listening to music</strong></p>
 <hr />
 <h3 id="osu-statsplays">osu! — Stats/Plays</h3>
 <ul>
 <li>Uses <code>OSU_ID</code> + <code>OSU_V1_API</code> or <code>CLIENT_ID</code>/<code>CLIENT_SECRET</code>.</li>
 <li>Posts plays and PP changes in allowed channels.</li>
 </ul>
+<p><strong>Only happens when the user, me is playing osu</strong></p>
 <hr />
-<h3 id="leetcode-stats">LeetCode — Stats</h3>
-<ul>
-<li>Uses <code>LEETCODE_HANDLE</code>.</li>
-<li>Posts summary stats on request (e.g., via <code>@yapper leetcode</code>).</li>
-</ul>
 <hr />
 <h3 id="roast">Roast</h3>
 <ul>
-<li>Posts roast messages in the channel defined by <code>ROAST_CHANNEL_ID</code>.</li>
+<li>Posts roast messages in the channel defined by <code>ROAST_CHANNEL_ID</code>. Currently it is <a href="https://hackclub.slack.com/archives/C09AM3PDZ0B">a dedicated roast channel</a> in which you can post your Last.fm username for it to roast you.</li>
 </ul>
 <hr />
 <h3 id="channel-blacklist">Channel Blacklist</h3>
@@ -295,6 +293,8 @@ ROAST_CHANNEL_ID=C0ROASTME
 <p>You can check the messages leaderboard for the past month by running <code>/yapperleaderboard</code></p>
 <p><em>Change in</em> <code>events/leaderboard.py</code>.</p>
 <hr />
+<h3 id="pinging-and-ai-responses">Pinging and AI Responses</h3>
+<p>By pinging <code>@Yapper</code> by itself, the bot responds with <code>What the f**k is your problem @&lt;user&gt;</code>, but if you put any text beside the ping. For example <code>@Yapper hi</code>, the bot will generate and display a response using <a href="ai.hackclub.com">the Hack Club AI</a></p>
 <h2 id="configuration-examples">Configuration Examples</h2>
 <h3 id="env-example"><code>.env</code> Example</h3>
 <pre><code class="language-dotenv">SLACK_BOT_TOKEN=xoxb-your-token
@@ -405,5 +405,5 @@ systemctl --user enable --now yapper
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-08-20 22:18:54.650825+00:00
+Build Date UTC : 2025-08-20 23:04:28.389303+00:00
 -->

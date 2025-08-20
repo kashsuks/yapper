@@ -6,6 +6,8 @@ nav_order: 1
 
 # Yapper Slack Bot Documentation
 
+Refer to [the website](https://kashsuks.github.io/yapper) for better documentation
+
 ## Table of Contents
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -159,22 +161,22 @@ Leaving #<channel name> now. Bye!
 
 *Tip:* To post **privately only to you**, replace `chat.postMessage` with `chat.postEphemeral` in the code.
 
+**Only happens when the user (me) is listening to music**
+
 ---
 
 ### osu! — Stats/Plays
 - Uses `OSU_ID` + `OSU_V1_API` or `CLIENT_ID`/`CLIENT_SECRET`.
 - Posts plays and PP changes in allowed channels.
 
----
+**Only happens when the user, me is playing osu**
 
-### LeetCode — Stats
-- Uses `LEETCODE_HANDLE`.
-- Posts summary stats on request (e.g., via `@yapper leetcode`).
+---
 
 ---
 
 ### Roast
-- Posts roast messages in the channel defined by `ROAST_CHANNEL_ID`.
+- Posts roast messages in the channel defined by `ROAST_CHANNEL_ID`. Currently it is [a dedicated roast channel](https://hackclub.slack.com/archives/C09AM3PDZ0B) in which you can post your Last.fm username for it to roast you.
 
 ---
 
@@ -192,6 +194,10 @@ You can check the messages leaderboard for the past month by running `/yapperlea
 *Change in* `events/leaderboard.py`.
 
 ---
+
+### Pinging and AI Responses
+
+By pinging `@Yapper` by itself, the bot responds with `What the f**k is your problem @<user>`, but if you put any text beside the ping. For example `@Yapper hi`, the bot will generate and display a response using [the Hack Club AI](ai.hackclub.com)
 
 ## Configuration Examples
 
