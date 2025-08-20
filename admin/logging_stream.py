@@ -46,7 +46,7 @@ class LogBroker:
             cat.last_message = event.message
             cat.last_level = event.level
             cat.last_ts = event.ts
-            # derive status from level
+
             cat.status = "error" if event.level.lower() == "error" else "ok"
 
             for q in list(self._listeners.values()):
@@ -63,7 +63,6 @@ class LogBroker:
             self._listeners[listener_id] = q
 
         try:
-            # On subscribe, send a snapshot of current statuses
             snapshot = []
             with self._lock:
                 for category, state in self.categories.items():
@@ -76,13 +75,10 @@ class LogBroker:
                     evt = q.get(timeout=15)
                     yield evt.to_sse()
                 except queue.Empty:
-                    # keep-alive comment to prevent proxies from closing connection
                     yield ": keep-alive\n\n"
         finally:
             with self._lock:
                 self._listeners.pop(listener_id, None)
 
 
-global_broker = LogBroker()
-
-
+globalBroker = LogBroker()
