@@ -17,6 +17,7 @@ from events import spotify
 from events import osuSlack
 from events import leave
 from events import musicRoast
+from events import leaderboard
 
 # Event registering
 mention.register(app)
@@ -26,6 +27,7 @@ spotify.register(app)
 osuSlack.register(app)
 leave.register(app)
 musicRoast.register(app)
+leaderboard.register(app)
 
 if __name__ == "__main__":
     # Configure root logger to INFO and attach SSE handler
