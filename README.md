@@ -6,6 +6,8 @@ nav_order: 1
 
 # Yapper Slack Bot Documentation
 
+Refer to [the website](https://kashsuks.github.io/yapper) for better documentation
+
 ## Table of Contents
 - [Requirements](#requirements)
 - [Installation](#installation)
