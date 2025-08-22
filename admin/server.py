@@ -170,7 +170,7 @@ class SseLoggingHandler(logging.Handler):
             pass
 
 
-def run_admin_server_in_thread(host: str = "127.0.0.1", port: int = 6942):
+def adminServer(host: str = "127.0.0.1", port: int = 6942):
     app = create_app()
 
     def _run():

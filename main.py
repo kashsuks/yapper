@@ -33,6 +33,7 @@ from events import osuSlack
 from events import leave
 from events import musicRoast
 from events import leaderboard
+from events import scoreSubmission
 
 # Event registering
 mention.register(app)
@@ -43,6 +44,7 @@ osuSlack.register(app)
 leave.register(app)
 musicRoast.register(app)
 leaderboard.register(app)
+scoreSubmission.register(app)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
