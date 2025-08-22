@@ -1,9 +1,13 @@
 import requests
 import re
 import logging
+import os
 from events.blacklist import blockIfBlacklisted
 
 logger = logging.getLogger(__name__)
+
+def getBlacklist():
+    return [uid.strip() for uid in os.getenv("MENTION_BLACKLIST", "").split(",") if uid.strip()]
 
 def register(app):
     @app.event("app_mention")
@@ -14,6 +18,14 @@ def register(app):
         threadTs = event.get("thread_ts") or event["ts"]
         botUserId = app.client.auth_test()["user_id"]
         strippedText = fullText.replace(f"<@{botUserId}>", "").strip()
+
+        mentionedIds = re.findall(r"<@([A-Z0-9]+)>", fullText)
+
+        blacklistUserIds = getBlacklist()
+        if any(uid in blacklistUserIds for uid in mentionedIds if uid != botUserId):
+            logger.info(f"[mention] Ignored because blacklisted user mentioned: {mentionedIds}")
+            return
+        # ---------------------------------------------------------------
 
         msg = f"Mention received from <@{userId}>: {strippedText}"
         logger.info(f"[mention] {msg}")
