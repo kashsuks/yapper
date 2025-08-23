@@ -79,6 +79,7 @@ export function register(app) {
     const subtype = event.subtype;
     const thread_ts = event.thread_ts || event.ts;
 
+    // Only work in the designated roast channel
     if (channel !== roastChannel || subtype === "bot_message" || !user) return;
 
     if (!text) {

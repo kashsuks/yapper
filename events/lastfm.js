@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import fetch from "node-fetch";
+import { isChannelBlacklisted } from './blacklist.js';
 dotenv.config();
 
 const lastfmUser = process.env.LASTFM_USER;
@@ -7,27 +8,6 @@ const lastfmApiKey = process.env.LASTFM_API_KEY;
 const slackChannel = process.env.SLACK_CHANNEL_IDS;
 const slackUser = process.env.SLACK_USER_ID;
 const pollInterval = 15000;
-
-// blacklist system
-const BLACKLISTED_CHANNEL_IDS = (process.env.BLACKLISTED_CHANNEL_IDS || "")
-  .split(",")
-  .map((id) => id.trim())
-  .filter(Boolean);
-
-function withBlacklist(actionName, fn) {
-  return async (...args) => {
-    const context = args.find((arg) => arg?.channel || arg?.channel_id) || {};
-    const channel = context.channel || context.channel_id || slackChannel;
-
-    if (BLACKLISTED_CHANNEL_IDS.includes(channel)) {
-      console.log(
-        `[BLACKLISTED] Skipping action "${actionName}" in channel ${channel}`
-      );
-      return;
-    }
-    return await fn(...args);
-  };
-}
 
 let session = null;
 
@@ -48,6 +28,12 @@ function parseTimestamp(track) {
 }
 
 async function startSession(track, client) {
+  // Check if channel is blacklisted before posting
+  if (isChannelBlacklisted(slackChannel)) {
+    console.log(`[BLACKLIST] Skipped lastfm session start in channel ${slackChannel}`);
+    return null;
+  }
+
   const text = `<@${slackUser}> just started a new listening session (he is peak unemployed)`;
   const res = await client.chat.postMessage({
     channel: slackChannel,
@@ -61,7 +47,13 @@ async function startSession(track, client) {
   };
 }
 
-const postTrack = withBlacklist("lastfm", async (track, threadTs, client) => {
+async function postTrack(track, threadTs, client) {
+  // Check if channel is blacklisted before posting
+  if (isChannelBlacklisted(slackChannel)) {
+    console.log(`[BLACKLIST] Skipped lastfm track post in channel ${slackChannel}`);
+    return;
+  }
+
   const name = track.name || "Unknown";
   const artist = track.artist?.["#text"] || "Unknown";
   const url = track.url?.replace(/^"|"$/g, "") || "";
@@ -71,7 +63,7 @@ const postTrack = withBlacklist("lastfm", async (track, threadTs, client) => {
     text,
     thread_ts: threadTs,
   });
-});
+}
 
 export function register(app) {
   const client = app.client;
@@ -94,7 +86,9 @@ export function register(app) {
         }
       } else if (nowPlaying) {
         session = await startSession(track, client);
-        await postTrack(track, session.threadTs, client);
+        if (session) {
+          await postTrack(track, session.threadTs, client);
+        }
       }
     } catch (err) {
       console.error("Polling error:", err);

@@ -1,10 +1,11 @@
 import pkg from "@slack/bolt";
+import { withBlacklistCommand, isChannelBlacklisted } from './blacklist.js';
 const { App } = pkg;
 
 const rhythmChannel = process.env.RHYTHM_CHANNEL;
 
 export function register(app) {
-  app.command("/submit-score", async ({ ack, body, client }) => {
+  app.command("/submit-score", withBlacklistCommand('submit-score', async ({ ack, body, client }) => {
     await ack();
     try {
       await client.views.open({
@@ -69,7 +70,7 @@ export function register(app) {
     } catch (e) {
       console.error("Error opening modal:", e?.data?.error || e);
     }
-  });
+  }));
 
   app.view("submit_score_modal", async ({ ack, body, view, client }) => {
     const stateValues = view.state.values;
@@ -96,6 +97,12 @@ export function register(app) {
       await ack();
     }
 
+    // Check if the rhythm channel is blacklisted before posting
+    if (isChannelBlacklisted(rhythmChannel)) {
+      console.log(`[BLACKLIST] Skipped score submission post in channel ${rhythmChannel}`);
+      return;
+    }
+
     const user = body.user.id;
     const game = stateValues.game_block.game.selected_option.value;
     const liked = stateValues.like_block.like.value;
@@ -114,4 +121,4 @@ They liked this because: ${liked}
       console.error("Error posting score:", e?.data?.error || e);
     }
   });
-}
+}   

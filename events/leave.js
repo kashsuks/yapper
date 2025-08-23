@@ -1,5 +1,7 @@
+import { withBlacklistCommand } from './blacklist.js';
+
 export function register(app) {
-  app.command("/yapperleave", async ({ ack, body, client, respond }) => {
+  app.command("/yapperleave", withBlacklistCommand('yapperleave', async ({ ack, body, client, respond }) => {
     await ack();
     const channelId = body.channel_id;
 
@@ -16,5 +18,5 @@ export function register(app) {
       console.error(`[leave] Failed to leave channel ${channelId}: ${e}`);
       await respond(`⚠️ Error: ${e}`);
     }
-  });
+  }));
 }

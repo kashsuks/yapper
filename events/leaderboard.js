@@ -1,13 +1,5 @@
 import axios from "axios";
-
-const BLACKLISTED_CHANNEL_IDS = (process.env.BLACKLISTED_CHANNEL_IDS || "")
-  .split(",")
-  .map((id) => id.trim())
-  .filter(Boolean);
-
-function isBlacklisted(chanId) {
-  return BLACKLISTED_CHANNEL_IDS.includes(chanId);
-}
+import { withBlacklistCommand } from './blacklist.js';
 
 function monthStartTs() {
   const now = new Date();
@@ -57,15 +49,10 @@ function buildLb(msgs) {
 }
 
 export function register(app) {
-  app.command("/yapperleaderboard", async ({ ack, body, respond }) => {
+  app.command("/yapperleaderboard", withBlacklistCommand('yapperleaderboard', async ({ ack, body, respond }) => {
     ack();
 
     const chanId = body.channel_id;
-    if (isBlacklisted(chanId)) {
-      await respond(":no_entry: Leaderboard is disabled in this channel.");
-      return;
-    }
-
     const botToken = process.env.SLACK_BOT_TOKEN;
     const msgs = await fetchMsgs(chanId, botToken);
     const lb = buildLb(msgs).slice(0, 10);
@@ -81,5 +68,5 @@ export function register(app) {
     });
 
     await respond(text);
-  });
+  }));
 }

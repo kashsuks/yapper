@@ -1,20 +1,8 @@
 import 'dotenv/config';
 import fetch from "node-fetch";
-import fs from "fs";
+import { isChannelBlacklisted } from './blacklist.js';
 
 const lastKnownRating = {};
-const blacklistFile = "./blacklist.json";
-
-function loadBlacklist() {
-  try {
-    if (fs.existsSync(blacklistFile)) {
-      return JSON.parse(fs.readFileSync(blacklistFile, "utf8"));
-    }
-  } catch (err) {
-    console.error("Error loading blacklist:", err);
-  }
-  return { channels: [], actions: [] };
-}
 
 function extractRating(data) {
   const userRank = data.userContestRanking;
@@ -76,16 +64,11 @@ function startAutoRatingCheck(app) {
 
           const message = `<@${slackUser}> ${emoji} LeetCode rating update: \`${prevRating}\` → \`${newRating}\` (${sign}${delta})`;
 
-          const blacklist = loadBlacklist();
-
           for (const channelId of channelIds) {
-            // Skip posting if this channel is blacklisted for the "leetcode" action
-            if (
-              blacklist.channels.includes(channelId) &&
-              blacklist.actions.includes("leetcode")
-            ) {
+            // Use the blacklist check function
+            if (isChannelBlacklisted(channelId)) {
               console.log(
-                `Skipping LeetCode update in blacklisted channel ${channelId}`
+                `[BLACKLIST] Skipped LeetCode update in channel ${channelId}`
               );
               continue;
             }

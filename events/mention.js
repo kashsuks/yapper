@@ -1,33 +1,8 @@
 import fetch from 'node-fetch';
-import fs from 'fs';
-
-const BLACKLIST_FILE = './blacklist.json';
-
-// Load blacklist dynamically
-function loadBlacklist() {
-  try {
-    if (fs.existsSync(BLACKLIST_FILE)) {
-      return JSON.parse(fs.readFileSync(BLACKLIST_FILE, 'utf8'));
-    }
-  } catch (err) {
-    console.error('Error loading blacklist:', err);
-  }
-  return { channels: [], actions: [] };
-}
+import { withBlacklistEvent } from './blacklist.js';
 
 export function register(app) {
-  app.event('app_mention', async ({ event, say, logger }) => {
-    const blacklist = loadBlacklist();
-
-    // Skip if the action or channel is blacklisted
-    if (
-      blacklist.actions?.includes('mention') &&
-      blacklist.channels?.includes(event.channel)
-    ) {
-      console.log(`Skipping mention in blacklisted channel ${event.channel}`);
-      return;
-    }
-
+  app.event('app_mention', withBlacklistEvent('mention', async ({ event, say, logger }) => {
     const userId = event.user;
     const fullText = event.text || '';
     const threadTs = event.thread_ts || event.ts;
@@ -64,5 +39,5 @@ export function register(app) {
       logger.error(err);
       await say({ text: "You're lucky I'm too lazy to deal with you right now.", thread_ts: threadTs });
     }
-  });
+  }));
 }
