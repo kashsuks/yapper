@@ -8,6 +8,8 @@ import { register as leaveRegister } from "./events/leave.js";
 import { register as musicRoastRegister } from "./events/musicRoast.js";
 import { register as leaderboardRegister } from "./events/leaderboard.js";
 import { register as scoreSubmissionRegister } from "./events/scoreSubmission.js";
+import { register as quoteRegister } from "./events/quote.js";
+import { register as javaRegister } from "./events/java.js"
 
 dotenv.config();
 
@@ -27,6 +29,8 @@ leaveRegister(app);
 musicRoastRegister(app);
 leaderboardRegister(app);
 scoreSubmissionRegister(app);
+quoteRegister(app);
+javaRegister(app);
 
 (async () => {
   await app.start();
