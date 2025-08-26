@@ -154,7 +154,7 @@ This action is compatible with the blacklist feature, meaning that if a channel 
 
 **Only happens when the user (me) is listening to music**
 
-This action is compatible with the blacklist feature, meaning that if a channel is in the balcklist channel ids and a user joins the channel, the join message will **NOT** be triggered.
+This action is compatible with the blacklist feature, meaning that if a channel is in the blacklist channel ids and a user joins the channel, the join message will **NOT** be triggered.
 
 **Change in `events/lastfm.js`**
 
