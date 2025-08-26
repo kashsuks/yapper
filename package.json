@@ -1,0 +1,20 @@
+{
+    "name": "yapper-bot",
+    "version": "1.0.0",
+    "description": "Slack bot rewritten in JavaScript with events system",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+    },
+    "dependencies": {
+    "@slack/bolt": "^4.4.0",
+    "dotenv": "^16.1.0",
+    "node-fetch": "^3.3.1",
+    "node-cron": "^4.2.1"
+    },
+    "devDependencies": {
+    "nodemon": "^3.0.2"
+    }
+}
