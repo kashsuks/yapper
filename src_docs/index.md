@@ -174,8 +174,6 @@ This action is compatible with the blacklist feature, meaning that if a channel 
 
 ---
 
-###
-
 ---
 
 ### Leaderboard
