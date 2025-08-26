@@ -6,8 +6,6 @@
 - [First Time Setup](#first-time-setup)
 - [File Overview](#file-overview)
 - [Commands & Behaviors](#commands-behaviors)
-- [Configuration Examples](#configuration-examples)
-- [Running & Deployment](#running-deployment)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -186,7 +184,7 @@ You can check the messages leaderboard for the past month by running `/yapperlea
 
 ### Pinging and AI Responses
 
-By pinging `@Yapper` by itself, the bot responds with `What the f**k is your problem @<user>`, but if you put any text beside the ping. For example `@Yapper hi`, the bot will generate and display a response using [the Hack Club AI](ai.hackclub.com)
+By pinging `@Yapper` by itself, the bot responds with `What the f**k is your problem @<user>`, but if you put any text beside the ping. For example `@Yapper hi`, the bot will generate and display a response using [the Hack Club AI](https://ai.hackclub.com)
 
 ## Troubleshooting
 

@@ -70,20 +70,6 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#configuration-examples">Configuration Examples</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#env-example">.env Example</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#running-deployment">Running &amp; Deployment</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#local">Local</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#systemd-server">Systemd (Server)</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
     </li>
     </ul>
@@ -132,8 +118,6 @@
 <li><a href="#first-time-setup">First Time Setup</a></li>
 <li><a href="#file-overview">File Overview</a></li>
 <li><a href="#commands-behaviors">Commands &amp; Behaviors</a></li>
-<li><a href="#configuration-examples">Configuration Examples</a></li>
-<li><a href="#running-deployment">Running &amp; Deployment</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 </ul>
 <hr />
@@ -167,7 +151,7 @@ LEETCODE_HANDLE=...
 ROAST_CHANNEL_ID=...
 
 # Signing
-SIGNING_SECRET...
+SIGNING_SECRET=...
 
 # Blacklisting and other safety features
 BLACKLISTED_CHANNEL_IDS=...
@@ -242,6 +226,7 @@ BLACKLISTED_CHANNEL_IDS=...
 <li><code>musicRoast.js</code> - Music roasts in specific channels (support by Last.fm API)</li>
 <li><code>scoreSubmission.js</code> - From like slash-command for rhythm game score submissions</li>
 <li><code>leetcode.js</code> - Updated LeetCode rating every 24 hours</li>
+<li><code>quote.js</code> - Timely quotes by the bot and also by a slash comamnd</li>
 </ul>
 </li>
 <li><strong><code>docs/</code></strong> – Documentation sources for GitHub Pages (MkDocs/Jekyll).</li>
@@ -250,25 +235,29 @@ BLACKLISTED_CHANNEL_IDS=...
 <h2 id="commands-behaviors">Commands &amp; Behaviors</h2>
 <h3 id="join-welcome">Join (Welcome)</h3>
 <p>When a user joins a channel:</p>
-<pre><code class="language-python">Hi &lt;@user&gt;, welcome to the land where &lt;@owner&gt; writes shit code
+<pre><code>Hi &lt;@user&gt;, welcome to the land where &lt;@owner&gt; writes shit code
 </code></pre>
-<p>This action is compatible with the blacklist feature, meaning that if a channel is in the balcklist channel ids and a user joins the channel, the join message will <strong>NOT</strong> be triggered.</p>
+<p>This action is compatible with the blacklist feature, meaning that if a channel is in the blacklist channel ids and a user joins the channel, the join message will <strong>NOT</strong> be triggered.</p>
+<p><strong>Change in <code>events/joined.js</code>.</strong></p>
 <p><em>Future plans are to change the &lt;@owner&gt; ping to channel manager</em></p>
 <hr />
 <h3 id="leave-slash-command">Leave (Slash Command)</h3>
-<p>Use <code>/yapperLeave</code> to make Yapper leave:</p>
+<p>Use <code>/yapperLeave</code> to make Yapper leave from the channel the user is currently in:</p>
 <pre><code>Leaving #&lt;channel name&gt; now. Bye!
 </code></pre>
-<p><em>Change in</em> <code>events/leave.py</code>.</p>
+<p>This action is compatible with the blacklist feature, meaning that if a channel is in the balcklist channel ids and a user joins the channel, the join message will <strong>NOT</strong> be triggered.</p>
+<p><strong>Change in <code>events/leave.js</code>.</strong></p>
 <hr />
 <h3 id="lastfm-now-playing-tracker">Last.fm — Now Playing Tracker</h3>
 <ul>
 <li>Polls your Last.fm recent track.</li>
 <li>Posts updates every 15s when the track changes.</li>
-<li>Posts only in <code>SLACK_CHANNEL_IDS</code>, skips <code>BLACKLISTED_CHANNEL_IDS</code>.</li>
+<li>Posts only in <code>SLACK_CHANNEL_IDS</code></li>
 </ul>
 <p><em>Tip:</em> To post <strong>privately only to you</strong>, replace <code>chat.postMessage</code> with <code>chat.postEphemeral</code> in the code.</p>
 <p><strong>Only happens when the user (me) is listening to music</strong></p>
+<p>This action is compatible with the blacklist feature, meaning that if a channel is in the blacklist channel ids and a user joins the channel, the join message will <strong>NOT</strong> be triggered.</p>
+<p><strong>Change in <code>events/lastfm.js</code></strong></p>
 <hr />
 <hr />
 <h3 id="roast">Roast</h3>
@@ -282,55 +271,13 @@ BLACKLISTED_CHANNEL_IDS=...
 </ul>
 <hr />
 <hr />
+<hr />
 <h3 id="leaderboard">Leaderboard</h3>
-<p>You can check the messages leaderboard for the past month by running <code>/yapperleaderboard</code></p>
+<p>You can check the messages leaderboard for the past month by running <code>/yapperleaderboard</code>. The message is by default only displayed to the user that runs it. The Slack API rate limits it to 1 request every 10 seconds so keep that in mind.</p>
 <p><em>Change in</em> <code>events/leaderboard.py</code>.</p>
 <hr />
 <h3 id="pinging-and-ai-responses">Pinging and AI Responses</h3>
-<p>By pinging <code>@Yapper</code> by itself, the bot responds with <code>What the f**k is your problem @&lt;user&gt;</code>, but if you put any text beside the ping. For example <code>@Yapper hi</code>, the bot will generate and display a response using <a href="ai.hackclub.com">the Hack Club AI</a></p>
-<h2 id="configuration-examples">Configuration Examples</h2>
-<h3 id="env-example"><code>.env</code> Example</h3>
-<pre><code class="language-dotenv">SLACK_BOT_TOKEN=xoxb-your-token
-SLACK_APP_TOKEN=xapp-your-token
-SLACK_USER_ID=U1234567
-SLACK_CHANNEL_IDS=C0123ABCD,C0456EFGH
-BLACKLISTED_CHANNEL_IDS=C0NOPOST1,C0NOPOST2
-LASTFM_USER=myuser
-LASTFM_API_KEY=myapikey
-LEETCODE_HANDLE=myhandle
-OSU_ID=123456
-OSU_V1_API=osuapikey
-CLIENT_ID=osuoauthid
-CLIENT_SECRET=osuoauthsecret
-ROAST_CHANNEL_ID=C0ROAST
-</code></pre>
-<hr />
-<h2 id="running-deployment">Running &amp; Deployment</h2>
-<h3 id="local">Local</h3>
-<pre><code class="language-bash">pip install -r requirements.txt
-python main.py
-</code></pre>
-<h3 id="systemd-server">Systemd (Server)</h3>
-<p><code>~/.config/systemd/user/yapper.service</code>:</p>
-<pre><code class="language-ini">[Unit]
-Description=Yapper Slack Bot
-After=network.target
-
-[Service]
-Environment=PYTHONUNBUFFERED=1
-WorkingDirectory=%h/yapper
-ExecStart=/usr/bin/python3 %h/yapper/main.py
-Restart=on-failure
-RestartSec=3
-
-[Install]
-WantedBy=default.target
-</code></pre>
-<p>Enable + start:</p>
-<pre><code class="language-bash">systemctl --user daemon-reload
-systemctl --user enable --now yapper
-</code></pre>
-<hr />
+<p>By pinging <code>@Yapper</code> by itself, the bot responds with <code>What the f**k is your problem @&lt;user&gt;</code>, but if you put any text beside the ping. For example <code>@Yapper hi</code>, the bot will generate and display a response using <a href="https://ai.hackclub.com">the Hack Club AI</a></p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <ul>
 <li><strong>Bot doesn’t post</strong></li>
@@ -398,5 +345,5 @@ systemctl --user enable --now yapper
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-08-24 06:28:34.381181+00:00
+Build Date UTC : 2025-08-26 06:19:57.456228+00:00
 -->
