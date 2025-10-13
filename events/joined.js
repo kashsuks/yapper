@@ -7,9 +7,25 @@ export function register(app) {
     logger.info(event);
     const user = event.user;
     const channel = event.channel;
-    await say({
+
+    try {
+      const botUserId = (await app.client.auth.test()).user_id;
+
+      const convoInfo = await app.client.conversations.info({ channel });
+      const channelInfo = convoInfo.channel || {};
+      const managerId = channelInfo.creator || event.inviter || botUserId; //if doesnt work then fallback to this
+
+      await say({
       channel,
-      text: `Hi <@${user}>, welcome to the land where <@${process.env.SLACK_USER_ID}> writes shit code`
-    });
+      text: `Hi <@${user}>, welcome to the land where <@${managerId}> does stupid shit`
+      });
+    } catch (err) {
+      logger.error('Failed to post welcome message:', err);
+
+      await say({
+        channel,
+        text: `Hi <@{user}>, welcome to the land where my creator does stupid shit`
+      })
+    }
   }));
 }

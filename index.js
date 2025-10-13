@@ -9,7 +9,7 @@ import { register as musicRoastRegister } from "./events/musicRoast.js";
 import { register as leaderboardRegister } from "./events/leaderboard.js";
 import { register as scoreSubmissionRegister } from "./events/scoreSubmission.js";
 import { register as quoteRegister } from "./events/quote.js";
-import { register as javaRegister } from "./events/java.js"
+import { register as javaRegister } from "./events/java.js";
 
 dotenv.config();
 
@@ -21,6 +21,7 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
 });
 
+// initialize all the different subcommands/subactions
 mentionRegister(app);
 leetcodeRegister(app);
 joinedRegister(app);
