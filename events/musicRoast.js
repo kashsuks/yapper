@@ -82,6 +82,11 @@ export function register(app) {
     // Only work in the designated roast channel
     if (channel !== roastChannel || subtype === "bot_message" || !user) return;
 
+    if (thread_ts && thread_ts !== event.ts) { // ignores the threaded messages and only checks top level channel messages
+      console.log(`[musicRoast] ignoring threaded message from user ${user}`);
+      return;
+    }
+
     if (!text) {
       await client.chat.postMessage({
         channel,
