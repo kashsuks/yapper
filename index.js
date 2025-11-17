@@ -10,6 +10,7 @@ import { register as leaderboardRegister } from "./events/leaderboard.js";
 import { register as scoreSubmissionRegister } from "./events/scoreSubmission.js";
 import { register as quoteRegister } from "./events/quote.js";
 import { register as javaRegister } from "./events/java.js";
+import { register as groupRegister } from "./events/pingGroup.js"
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ leaderboardRegister(app);
 scoreSubmissionRegister(app);
 quoteRegister(app);
 javaRegister(app);
+groupRegister(app);
 
 (async () => {
   await app.start();
