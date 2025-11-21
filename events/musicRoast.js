@@ -1,4 +1,5 @@
 import axios from "axios";
+import fetch from 'node-fetch';
 
 const roastChannel = process.env.ROAST_CHANNEL_ID;
 const lastfmApiKey = process.env.LASTFM_API_KEY;
@@ -39,18 +40,24 @@ function pickTrack(tracks) {
 
 async function generateRoast(userId, track) {
   try {
+    const apiKey = process.env.HC_AI_TOKEN;
     const resp = await axios.post(
-      "https://ai.hackclub.com/chat/completions",
+      'https://ai.hackclub.com/proxy/v1/chat/completions',
       {
+        model: 'qwen/qwen3-32b',
         messages: [
-          {
-            role: "user",
-            content: `Roast someone for listening to '${track}'. Be funny, sarcastic, and a bit mean but not too harsh. Keep it under 100 words. Don't use quotes around your response.`
-          }
+          { role: 'user', content: `Roast someone for listening to '${track}'. Be funny, sarcastic, and a bit mean but not too harsh. Keep it under 100 words. Don't use quotes around your response.`}
         ]
       },
-      { timeout: 15000 }
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        }
+      }
     );
+
+    if (resp.status !== 200) throw new Error(resp.statusText);
 
     if (resp.data?.choices?.[0]?.message?.content) {
       let roast = resp.data.choices[0].message.content.trim();
@@ -64,7 +71,7 @@ async function generateRoast(userId, track) {
       return `<@${userId}> ${roast}`;
     }
 
-    return `yo <@${userId}> really spinning *${track}*? that's wild 💀`;
+    return `yo <@${userId}> really spinning *${track}*? that's wild`;
   } catch (e) {
     console.error(`[musicRoast] Exception generating roast for ${userId}: ${e}`);
     return `yo <@${userId}> really spinning *${track}*? that's questionable`;
